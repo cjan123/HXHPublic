@@ -1,0 +1,668 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国执业药师资格证考位名额查询</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* 非常浅的蓝色背景 */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 55%; /* 修改为 55% */
+            margin: 30px auto;
+            padding-top: 10px; /* 日期区域和其他内容之间的间距 */
+        }
+
+        .header {
+            font-size: 21px; /* 日期文字颜色改为深蓝色 #0341a1 */
+            color: #0341a1;
+            background-color: #f0f8ff; /* 日期下方浅蓝色底色 */
+            padding: 10px 20px; /* 增加左右空白 */
+            text-align: left; /* 日期靠左 */
+            font-weight: bold; /* 日期文字加粗 */
+            width: fit-content; /* 宽度根据内容自适应 */
+            margin-bottom: 10px; /* 适当调整日期区域和下面内容的间距 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 30px; /* 修改标题字号为 30px */
+            margin: 20px 0;
+            color: #053a8a; /* 修改标题字体颜色为 #053a8a */
+            font-weight: bold; /* 加粗显示 */
+            font-family: 'Microsoft YaHei', sans-serif; /* 设置字体为微软雅黑 */
+        }
+
+        .title-line {
+            width: 100%;
+            height: 1px;
+            background-color: #d1e4f7; /* 横线颜色稍微加深一点 */
+            margin-bottom: 20px; /* 横线和标题之间的间距 */
+        }
+
+        .new-line {
+            width: 128px; /* 新增的横线宽度为 128px */
+            height: 3px; /* 新增的横线高度为 3px */
+            background-color: #053a8a; /* 新横线颜色 */
+            margin: 20px auto; /* 横线居中 */
+        }
+
+        .query-box {
+            display: flex;
+            justify-content: space-between; /* 使其排列成一行 */
+            margin-bottom: 20px;
+        }
+
+            .query-box select, .query-box input {
+                padding: 8px;
+                font-size: 16px;
+                border-radius: 4px;
+                width: 180px; /* 控制输入框和下拉框宽度 */
+                border: 1px solid #ccc; /* 设置正常的文本框边框 */
+            }
+
+            .query-box label {
+                font-size: 14px;
+                margin-right: 5px;
+                align-self: center; /* 保证标签垂直居中 */
+                display: block;
+                font-family: 'Microsoft YaHei', sans-serif; /* 设置字体为微软雅黑 */
+                margin-bottom: 5px;
+                color: #053a8a;
+                font-weight:bold;
+            }
+
+        .button {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+            .button button {
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #0051cc;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+        /* 新容器样式 */
+        .query-result-container {
+            border: 1px solid #b0d6f9; /* 边框颜色 */
+            border-radius: 10px; /* 圆角 */
+            background-color: #f0f8ff; /* 与 header 区域一致的背景颜色 */
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 80, 255, 0.1); /* 加入浅阴影效果 */
+        }
+
+        .result-container {
+            background-color: #053a8a; /* 深蓝色背景 */
+            border-radius: 10px; /* 圆角 */
+            padding: 20px;
+            margin-bottom: 20px; /* 适当调整结果区域与下方内容的间距 */
+        }
+
+        .result {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px; /* 增加字体大小 */
+            color: white; /* 白色字体 */
+        }
+
+            .result div {
+                width: 30%;
+                text-align: center;
+                margin-top: 10px; /* 增加数字与文字之间的间距 */
+                font-weight: bold; /* 字体加粗 */
+            }
+        /* 为剩余名额数字设置金黄色字体 */
+        .remaining-amount strong {
+            color: gold; /* 设置金黄色 */
+        }
+        /* 不加粗的文本，字体大小小一号 */
+        .result span {
+            font-weight: normal;
+            font-size: 16px; /* 字号比数字小一号 */
+        }
+        /* 实时更新样式 */
+        .live-update {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .query-result-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #053a8a;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        /* 新增表单部分 */
+        .form-container {
+            border: 1px solid #b0d6f9;
+            background-color: #f0f8ff;
+            margin-top: 40px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+            .form-container label {
+                font-size: 16px;
+                margin-right: 5px;
+                display: block;
+                color: #073570;
+                font-family: 'Microsoft YaHei', sans-serif; /* 设置字体为微软雅黑 */
+            }
+
+            .form-container .form-row {
+                display: flex;
+                justify-content: space-between;
+            }
+
+                .form-container .form-row div {
+                    width: 48%; /* 每行两个表单元素，确保它们对齐 */
+                    display: inline-block;
+                }
+            .form-container select {
+                padding: 8px;
+                font-size: 16px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                width: 100%;
+            }
+
+            .form-container input{
+                padding: 8px;
+                font-size: 16px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                width: 95%;
+            }
+            .form-container .note {
+                font-size: 14px;
+                color: #555;
+                background-color: #fff8d4;
+                padding: 10px;
+                margin-top: 20px;
+                border-radius: 5px;
+                font-family: 'Microsoft YaHei', sans-serif; /* 设置字体为微软雅黑 */
+            }
+
+            .form-container button {
+                background-color: #0051cc;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+
+        /* 新增文字容器 */
+        .system-title {
+            font-size: 30px;
+            font-weight: bold;
+            color: #053a8a; /* 与“全国执业药师资格证考位名额查询”一致的颜色 */
+            text-align: center;
+            margin-top: 40px;
+        }
+        /* 新增左侧有边框的样式 */
+        .highlighted-text {
+            border-left: 4px solid #8a6205; /* 设置左侧边框颜色 */
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .note-title {
+            color: #8a6205;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        /* 去掉 <li> 标签的点 */
+        .note ul {
+            color: #8a6205;
+            list-style-type: none; /* 去掉点 */
+            padding-left: 0; /* 移除左边距 */
+        }
+        /* 弹出框样式 */
+        .modal {
+            display: none; /* 默认不显示 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            overflow: auto;
+            padding-top: 60px;
+        }
+        /* 弹出框内容 */
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 25%;
+            text-align: center;
+        }
+            /* 弹出框中的绿色勾选图标 */
+            .modal-content .check-icon {
+                font-size: 30px;
+                color: #28a745;
+            }
+            /* 弹出框标题 */
+            .modal-content .modal-title {
+                font-size: 22px;
+                font-weight: bold;
+                color: #053a8a;
+                margin-bottom: 10px;
+            }
+            /* 弹出框正文 */
+            .modal-content .modal-body {
+                font-size: 16px;
+                color: #555;
+                margin-bottom: 20px;
+                font-family: 'Microsoft YaHei', sans-serif; /* 设置字体为微软雅黑 */
+            }
+            /* 确认按钮 */
+            .modal-content .confirm-btn {
+                background-color: #0051cc;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+                .modal-content .confirm-btn:hover {
+                    background-color: #003e8c;
+                }
+
+        .redfont {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 显示日期和时间 -->
+        <div class="header">
+            <span id="date-time"></span>
+        </div>
+
+        <!-- 横线放在日期和时间上方 -->
+        <div class="title-line"></div>
+
+        <div class="main-title">全国执业药师资格证考位名额查询</div>
+
+        <!-- 之前的横线 -->
+        <div class="new-line"></div>
+
+        <!-- 新容器，包含 query-box, result 和 button -->
+        <div class="query-result-container">
+            <!-- 添加的标题 -->
+            <div class="query-result-title">考位名额查询</div>
+
+            <!-- 查询部分 -->
+            <div class="query-box">
+                <div>
+                    <label for="province">省份</label>
+                    <select id="province" onchange="updateCityOptions()">
+                        <!-- 省份选项将动态加载 -->
+                    </select>
+                </div>
+
+                <div>
+                    <label for="city">地区</label>
+                    <select id="city">
+                        <!-- 城市选项将在选择省份后更新 -->
+                    </select>
+                </div>
+
+                <div>
+                    <label for="deadline">截止时间</label>
+                    <input type="text" id="deadline" value="" />
+                </div>
+
+                <!-- 将查询并刷新按钮放在这里 -->
+                <div class="button">
+                    <button class="submit-btn" onclick="refreshData()">查询并刷新</button>
+                </div>
+            </div>
+
+
+            <!-- result 放在一个新的容器内，容器有深蓝色背景、圆角 -->
+            <div class="result-container">
+                <div class="result">
+                    <div>
+                        <span>总名额</span>
+                        <br>
+                        <strong>80</strong>
+                    </div>
+                    <div>
+                        <span>已申请名额</span>
+                        <br>
+                        <strong id="applied-amount">74</strong> <!-- 动态更新 -->
+                    </div>
+                    <div class="remaining-amount">
+                        <span>剩余名额</span>
+                        <br>
+                        <strong id="remaining-amount">6</strong> <!-- 动态计算 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新增的文字部分 -->
+        <div class="system-title">全国执业药师资格考试预约备案系统</div>
+        <!-- 之前的横线 -->
+        <div class="new-line"></div>
+        <div class="form-container">
+            <div class="form-row">
+                <div>
+                    <label for="name">姓名 <span class="redfont">*</span></label>
+                    <input type="text" id="name" placeholder="请输入您的姓名" required>
+                </div>
+                <div>
+                    <label for="gender">性别 <span class="redfont">*</span></label>
+                    <select id="gender" required>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label for="phone">手机号码 <span class="redfont">*</span></label>
+                    <input type="text" id="phone" placeholder="请输入11位手机号" required>
+                </div>
+                <div>
+                    <label for="education">现阶段学历</label>
+                    <select id="education" required>
+                        <option value="小学">小学</option>
+                        <option value="初中">初中</option>
+                        <option value="高中">高中</option>
+                        <option value="本科">本科</option>
+                        <option value="硕士">硕士</option>
+                        <option value="博士">博士</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label for="district">地区</label>
+                    <select id="district" required>
+                        <option value="">请选择地区</option>
+                        <option value="北京市">北京市</option>
+                        <option value="天津市">天津市</option>
+                        <option value="河北省">河北省</option>
+                        <option value="山西省">山西省</option>
+                        <option value="内蒙古自治区">内蒙古自治区</option>
+                        <option value="辽宁省">辽宁省</option>
+                        <option value="吉林省">吉林省</option>
+                        <option value="黑龙江省">黑龙江省</option>
+                        <option value="上海市">上海市</option>
+                        <option value="江苏省">江苏省</option>
+                        <option value="浙江省">浙江省</option>
+                        <option value="安徽省">安徽省</option>
+                        <option value="福建省">福建省</option>
+                        <option value="江西省">江西省</option>
+                        <option value="山东省">山东省</option>
+                        <option value="河南省">河南省</option>
+                        <option value="湖北省">湖北省</option>
+                        <option value="湖南省">湖南省</option>
+                        <option value="广东省">广东省</option>
+                        <option value="广西壮族自治区">广西壮族自治区</option>
+                        <option value="海南省">海南省</option>
+                        <option value="重庆市">重庆市</option>
+                        <option value="四川省">四川省</option>
+                        <option value="贵州省">贵州省</option>
+                        <option value="云南省">云南省</option>
+                        <option value="西藏自治区">西藏自治区</option>
+                        <option value="陕西省">陕西省</option>
+                        <option value="甘肃省">甘肃省</option>
+                        <option value="青海省">青海省</option>
+                        <option value="宁夏回族自治区">宁夏回族自治区</option>
+                        <option value="新疆维吾尔自治区">新疆维吾尔自治区</option>
+                        <!-- 添加更多选项 -->
+                    </select>
+                </div>
+                <div>
+                    <label for="residence">户籍</label>
+                    <select id="residence" required>
+                        <option value="">请选择户籍</option>
+                        <option value="北京市">北京市</option>
+                        <option value="天津市">天津市</option>
+                        <option value="河北省">河北省</option>
+                        <option value="山西省">山西省</option>
+                        <option value="内蒙古自治区">内蒙古自治区</option>
+                        <option value="辽宁省">辽宁省</option>
+                        <option value="吉林省">吉林省</option>
+                        <option value="黑龙江省">黑龙江省</option>
+                        <option value="上海市">上海市</option>
+                        <option value="江苏省">江苏省</option>
+                        <option value="浙江省">浙江省</option>
+                        <option value="安徽省">安徽省</option>
+                        <option value="福建省">福建省</option>
+                        <option value="江西省">江西省</option>
+                        <option value="山东省">山东省</option>
+                        <option value="河南省">河南省</option>
+                        <option value="湖北省">湖北省</option>
+                        <option value="湖南省">湖南省</option>
+                        <option value="广东省">广东省</option>
+                        <option value="广西壮族自治区">广西壮族自治区</option>
+                        <option value="海南省">海南省</option>
+                        <option value="重庆市">重庆市</option>
+                        <option value="四川省">四川省</option>
+                        <option value="贵州省">贵州省</option>
+                        <option value="云南省">云南省</option>
+                        <option value="西藏自治区">西藏自治区</option>
+                        <option value="陕西省">陕西省</option>
+                        <option value="甘肃省">甘肃省</option>
+                        <option value="青海省">青海省</option>
+                        <option value="宁夏回族自治区">宁夏回族自治区</option>
+                        <option value="新疆维吾尔自治区">新疆维吾尔自治区</option>
+                        <!-- 添加更多选项 -->
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label for="certificate-purpose">证书用途</label>
+                    <select id="certificate-purpose" required>
+                        <option value="">请选择证书用途</option>
+                        <option value="发展">发展</option>
+                        <option value="就业">就业</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="profession">执业药师类别</label>
+                    <select id="profession" required>
+                        <option value="中药">中药</option>
+                        <option value="西药">西药</option>
+                        <!-- 添加更多选项 -->
+                    </select>
+                </div>
+            </div>
+            <div class="highlighted-text">
+                <div class="note">
+                    <p class="note-title">注意事项：</p>
+                    <ul>
+                        <li>1.申请信息统一录入系统，报考前指导考生报名。</li>
+                        <li>2.提交之前务必确定考生报考信息正确，以免错报误报。</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="button">
+                <button class="submit-btn" onclick="showModal()">提交申请</button>
+            </div>
+        </div>
+        <!-- 弹出框 -->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <div class="check-icon">&#10004;</div> <!-- 绿色勾选图标 -->
+                <div class="modal-title">信息审核备案成功</div>
+                <div class="modal-body">
+                    您的申请信息已成功提交至考试系统，工作人员将在 24 小时之内与您联系确认报考事宜。
+                </div>
+                <button class="confirm-btn" onclick="closeModal()">确认</button>
+            </div>
+        </div>
+        <!-- 实时更新时间 -->
+        <div class="live-update" id="live-update"></div>
+    </div>
+
+    <!-- 新增的表单部分 -->
+
+
+    <script>
+        // 实时更新日期和时间
+        function updateDateTime() {
+            const dateTimeElement = document.getElementById('date-time');
+            const liveUpdateElement = document.getElementById('live-update');
+
+            const now = new Date();
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const formattedDate = now.toLocaleString('zh-CN', options);
+
+            dateTimeElement.textContent = formattedDate;
+
+            // 每秒更新一次
+            setTimeout(updateDateTime, 1000);
+        }
+
+        updateDateTime(); // 初始化日期和时间更新
+
+        // 获取当前日期并设置为默认值
+        function setDefaultDate() {
+            const deadlineInput = document.getElementById('deadline');
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // 月份是从0开始的
+            const day = now.getDate().toString().padStart(2, '0');
+            deadlineInput.value = `${year}-${month}-${day}`; // 设置为 YYYY-MM-DD 格式
+        }
+
+        // 提交表单
+        function submitForm() {
+            alert("表单已提交！");
+        }
+
+        // 设置默认日期
+        window.onload = function () {
+            setDefaultDate();  // 设置截止时间为当天日期
+            updateCityOptions();  // 初始化城市列表加载
+        };
+
+        // JSON 数据：包含所有省份及其城市
+        const provinceCityData = {
+            "北京市": ["北京"],
+            "天津市": ["天津"],
+            "河北省": ["石家庄", "唐山", "邯郸", "保定", "沧州", "廊坊", "衡水", "邢台", "秦皇岛", "承德", "张家口", "雄安新区"],
+            "山西省": ["太原", "大同", "长治", "阳泉", "晋城", "朔州", "晋中", "运城", "忻州", "临汾", "吕梁"],
+            "内蒙古自治区": ["呼和浩特", "包头", "鄂尔多斯", "呼伦贝尔", "巴彦淖尔", "乌兰察布", "兴安盟", "锡林郭勒盟", "阿拉善盟"],
+            "辽宁省": ["沈阳", "大连", "鞍山", "抚顺", "本溪", "丹东", "锦州", "营口", "阜新", "辽阳", "盘锦", "铁岭", "朝阳", "葫芦岛"],
+            "吉林省": ["长春", "吉林市", "四平", "辽源", "通化", "白山", "松原", "白城", "延边"],
+            "黑龙江省": ["哈尔滨", "齐齐哈尔", "牡丹江", "佳木斯", "大庆", "伊春", "双鸭山", "鹤岗", "黑河", "绥化", "大兴安岭"],
+            "上海市": ["上海"],
+            "江苏省": ["南京", "苏州", "无锡", "常州", "镇江", "扬州", "泰州", "淮安", "连云港", "宿迁", "盐城", "徐州", "南通", "宿迁", "常熟", "张家港"],
+            "浙江省": ["杭州", "宁波", "温州", "嘉兴", "湖州", "绍兴", "金华", "衢州", "舟山", "台州", "丽水"],
+            "安徽省": ["合肥", "芜湖", "马鞍山", "淮南", "蚌埠", "淮北", "铜陵", "安庆", "黄山", "滁州", "阜阳", "宿州", "六安", "亳州", "池州", "宣城"],
+            "福建省": ["福州", "厦门", "泉州", "漳州", "莆田", "三明", "南平", "龙岩", "宁德"],
+            "江西省": ["南昌", "九江", "赣州", "萍乡", "吉安", "宜春", "抚州", "上饶", "景德镇", "鹰潭"],
+            "山东省": ["济南", "青岛", "烟台", "淄博", "济宁", "泰安", "临沂", "德州", "聊城", "滨州", "菏泽", "日照", "枣庄", "东营", "威海", "莱芜", "临沂"],
+            "河南省": ["郑州", "洛阳", "开封", "平顶山", "安阳", "鹤壁", "新乡", "焦作", "濮阳", "许昌", "漯河", "三门峡", "南阳", "商丘", "信阳", "周口", "驻马店"],
+            "湖北省": ["武汉", "襄阳", "宜昌", "荆门", "孝感", "荆州", "黄石", "咸宁", "随州", "恩施", "十堰", "仙桃", "天门", "潜江", "神农架"],
+            "湖南省": ["长沙", "岳阳", "株洲", "湘潭", "衡阳", "邵阳", "娄底", "郴州", "永州", "常德", "益阳", "张家界", "怀化", "湘西"],
+            "广东省": ["广州", "深圳", "珠海", "汕头", "韶关", "佛山", "江门", "湛江", "茂名", "肇庆", "惠州", "梅州", "汕尾", "河源", "阳江", "清远", "东莞", "中山", "东沙群岛"],
+            "广西壮族自治区": ["南宁", "柳州", "桂林", "梧州", "北海", "防城港", "钦州", "贵港", "玉林", "百色", "贺州", "河池", "来宾", "崇左"],
+            "海南省": ["海口", "三亚", "儋州", "琼海", "文昌", "万宁", "东方", "定安", "屯昌", "临高", "澄迈", "白沙", "昌江", "乐东", "陵水", "保亭", "琼中"],
+            "重庆市": ["重庆"],
+            "四川省": ["成都", "绵阳", "德阳", "自贡", "泸州", "泸州", "宜宾", "资阳", "乐山", "眉山", "广元", "达州", "巴中", "南充", "雅安", "广安", "遂宁", "内江"],
+            "贵州省": ["贵阳", "遵义", "安顺", "铜仁", "毕节", "六盘水", "凯里", "都匀"],
+            "云南省": ["昆明", "曲靖", "大理", "玉溪", "丽江", "红河", "昭通", "文山", "楚雄", "思茅", "西双版纳"],
+            "西藏自治区": ["拉萨"],
+            "陕西省": ["西安", "宝鸡", "咸阳", "铜川", "渭南", "延安", "汉中", "榆林", "安康", "商洛"],
+            "甘肃省": ["兰州", "天水", "武威", "定西", "平凉", "白银", "酒泉", "嘉峪关"],
+            "青海省": ["西宁"],
+            "宁夏回族自治区": ["银川"],
+            "新疆维吾尔自治区": ["乌鲁木齐", "喀什", "克拉玛依", "吐鲁番", "哈密"]
+        };
+
+        // 初始化省份下拉框
+        function initializeProvinceOptions() {
+            const provinceSelect = document.getElementById('province');
+
+            for (const province in provinceCityData) {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            }
+        }
+
+        // 更新城市选项
+        function updateCityOptions() {
+            const province = document.getElementById('province').value;
+            const citySelect = document.getElementById('city');
+
+            // 清空现有城市选项
+            citySelect.innerHTML = '';
+
+            // 获取选中的省份对应的城市列表
+            const cities = provinceCityData[province] || [];
+
+            // 动态添加城市选项
+            cities.forEach(function (city) {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        }
+
+        // 随机生成已申请名额，并计算剩余名额
+        function refreshData() {
+            const appliedAmount = Math.floor(Math.random() * (79 - 71 + 1)) + 71;  // 生成 71 到 79 之间的随机数
+            const remainingAmount = 80 - appliedAmount;
+
+            document.getElementById('applied-amount').textContent = appliedAmount;
+            document.getElementById('remaining-amount').textContent = remainingAmount;
+        }
+
+        // 初始化省份下拉框选项
+        window.onload = function () {
+            setDefaultDate();  // 设置截止时间为当天日期
+            initializeProvinceOptions();
+            updateCityOptions();  // 初始城市列表加载
+        };
+
+        // 显示弹出框
+        function showModal() {
+            document.getElementById("confirmationModal").style.display = "block";
+        }
+
+        // 关闭弹出框
+        function closeModal() {
+            document.getElementById("confirmationModal").style.display = "none";
+        }
+    </script>
+</body>
+</html>
